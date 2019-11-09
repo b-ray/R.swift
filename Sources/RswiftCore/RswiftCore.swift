@@ -138,9 +138,10 @@ public struct RswiftCore {
       internalStruct
     ]
     
-    let objcConvertibles: [ObjcCodeConvertible] = [
+    let objcConvertibles: [ObjcCodeConvertible?] = [
       ObjcHeaderPrinter(),
       externalStruct,
+      internalStruct,
       ObjcFooterPrinter(),
     ]
     
@@ -150,7 +151,7 @@ public struct RswiftCore {
       + "\n\n" // Newline at end of file
 
     if callInformation.objcCompat {
-      fileContents += objcConvertibles.compactMap { $0.objcCode(prefix: "") }.joined(separator: "\n") + "\n"
+      fileContents += objcConvertibles.compactMap { $0?.objcCode(prefix: "") }.joined(separator: "\n") + "\n"
     }
     
     if callInformation.unusedImages {

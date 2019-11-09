@@ -56,8 +56,9 @@ struct Function: UsedTypesProvider, SwiftCodeConverible, ObjcCodeConvertible {
     }
     let availablesString = availables.map { "@available(\($0))\n" }.joined(separator: "")
     let accessModifierString = accessModifier.swiftCode
-    let staticString = isStatic ? "static " : ""
+    let staticString = "static "
     let genericsString = generics.map { "<\($0)>" } ?? ""
+    let methodCallString = isStatic ? "" : "()"
 
     let objcParams = parameters.filter { $0.type != Type._Void }
     
@@ -83,11 +84,13 @@ struct Function: UsedTypesProvider, SwiftCodeConverible, ObjcCodeConvertible {
     
     let throwString = doesThrow ? " throws" : ""
     let returnString = Type._Void == returnType ? "" : " -> \(returnType)"
-    let bodyStringAllParams = "return \(prefix).\(name)(\(allParameterInjection))"
-    let bodyStringRequiredParams = "return \(prefix).\(name)(\(requiredParameterInjection))"
+    let bodyStringAllParams = "return \(prefix)\(methodCallString).\(name)(\(allParameterInjection))"
+    let bodyStringRequiredParams = "return \(prefix)\(methodCallString).\(name)(\(requiredParameterInjection))"
     let functionName = "\(prefix)_\(name)"
       .replacingOccurrences(of: ".", with: "_")
       .replacingOccurrences(of: "R_", with: "")
+      .replacingOccurrences(of: "__", with: "_")
+      .drop { $0 == "_" }
     
     let commentsStringAllParams = bodyStringAllParams.replacingOccurrences(of: "return", with: "//")
     let commentsStringRequiredParams = bodyStringRequiredParams.replacingOccurrences(of: "return", with: "//")
