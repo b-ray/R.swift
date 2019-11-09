@@ -11,8 +11,16 @@ import Foundation
 
 enum Locale {
   case none
-  case base
+  case base // Older projects use a "Base" locale
   case language(String)
+
+  var isNone: Bool {
+    if case .none = self {
+      return true
+    }
+
+    return false
+  }
 
   var isBase: Bool {
     if case .base = self {
@@ -22,24 +30,23 @@ enum Locale {
     return false
   }
 
-  var isNone: Bool {
-    if case .none = self {
-      return true
+  var language: String? {
+    if case .language(let language) = self {
+      return language
     }
 
-    return false
+    return nil
   }
 }
 
-extension Locale {
+extension Locale: Hashable {
   init(url: URL) {
     if let localeComponent = url.pathComponents.dropLast().last , localeComponent.hasSuffix(".lproj") {
       let lang = localeComponent.replacingOccurrences(of: ".lproj", with: "")
 
       if lang == "Base" {
         self = .base
-      }
-      else {
+      } else {
         self = .language(lang)
       }
     }
@@ -59,36 +66,5 @@ extension Locale {
     case .language(let language):
       return language
     }
-  }
-}
-
-extension Locale: Hashable {
-  var hashValue: Int {
-    switch self {
-    case .none:
-      return 0
-
-    case .base:
-      return 1
-
-    case .language(let language):
-      return 2 &+ language.hashValue
-    }
-  }
-}
-
-func ==(lhs: Locale, rhs: Locale) -> Bool {
-  switch (lhs, rhs) {
-  case (.none, .none):
-    return true
-
-  case (.base, .base):
-    return true
-
-  case let (.language(lLang), .language(rLang)):
-    return lLang == rLang
-
-  default:
-    return false
   }
 }

@@ -12,10 +12,12 @@ import XcodeEdit
 
 public struct CallInformation {
   let outputURL: URL
+  let uiTestOutputURL: URL?
   let rswiftIgnoreURL: URL
 
+  let generators: [Generator]
   let accessLevel: AccessLevel
-  let imports: Set<Module>
+  let imports: [Module]
 
   let xcodeprojURL: URL
   let targetName: String
@@ -36,10 +38,12 @@ public struct CallInformation {
 
   public init(
     outputURL: URL,
+    uiTestOutputURL: URL?,
     rswiftIgnoreURL: URL,
 
+    generators: [Generator],
     accessLevel: AccessLevel,
-    imports: Set<Module>,
+    imports: [Module],
 
     xcodeprojURL: URL,
     targetName: String,
@@ -59,10 +63,12 @@ public struct CallInformation {
     unusedImages: Bool
   ) {
     self.outputURL = outputURL
+    self.uiTestOutputURL = uiTestOutputURL
     self.rswiftIgnoreURL = rswiftIgnoreURL
 
     self.accessLevel = accessLevel
     self.imports = imports
+    self.generators = generators
 
     self.xcodeprojURL = xcodeprojURL
     self.targetName = targetName

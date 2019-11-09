@@ -20,6 +20,7 @@ struct Struct: UsedTypesProvider, SwiftCodeConverible, ObjcCodeConvertible {
   var functions: [Function]
   var structs: [Struct]
   var classes: [Class]
+  let os: [String]
 
   var isEmpty: Bool {
     return properties.isEmpty
@@ -42,7 +43,7 @@ struct Struct: UsedTypesProvider, SwiftCodeConverible, ObjcCodeConvertible {
   }
 
   var swiftCode: String {
-    let commentsString = comments.map { "/// \($0)\n" }.joined(separator: "")
+    let commentsString = comments.map { $0.isEmpty ? "///\n" : "/// \($0)\n" }.joined(separator: "")
     let availablesString = availables.map { "@available(\($0))\n" }.joined(separator: "")
     let accessModifierString = accessModifier.swiftCode
     let implementsString = implements.count > 0 ? ": " + implements.map { $0.swiftCode }.joined(separator: ", ") : ""
@@ -82,7 +83,23 @@ struct Struct: UsedTypesProvider, SwiftCodeConverible, ObjcCodeConvertible {
     let bodyComponents = [typealiasString, varsString, functionsString, structsString, classesString, fileprivateInit].filter { $0 != "" }
     let bodyString = bodyComponents.joined(separator: "\n\n").indent(with: "  ")
 
-    return "\(commentsString)\(availablesString)\(accessModifierString)struct \(type)\(implementsString) {\n\(bodyString)\n}"
+    return OSPrinter(code: "\(commentsString)\(availablesString)\(accessModifierString)struct \(type)\(implementsString) {\n\(bodyString)\n}", supportedOS: os).swiftCode
+  }
+
+  static var empty: Struct {
+    return Struct(
+      availables: [],
+      comments: [],
+      accessModifier: .publicLevel,
+      type: Type(module: .host, name: "empty"),
+      implements: [],
+      typealiasses: [],
+      properties: [],
+      functions: [],
+      structs: [],
+      classes: [],
+      os: []
+    )
   }
     
   func objcCode(prefix: String) -> String {

@@ -30,6 +30,7 @@ class AggregatedStructGenerator: StructGenerator {
         return result
       }
       .reduce(StructGeneratorResultCollector()) { collector, result in collector.appending(result) }
+      .sorted
 
     let externalStruct = Struct(
       availables: [],
@@ -41,7 +42,8 @@ class AggregatedStructGenerator: StructGenerator {
       properties: [],
       functions: [],
       structs: collectedResult.externalStructs,
-      classes: []
+      classes: [],
+      os: []
     )
 
     let internalStruct = Struct(
@@ -54,7 +56,8 @@ class AggregatedStructGenerator: StructGenerator {
       properties: [],
       functions: [],
       structs: collectedResult.internalStructs,
-      classes: []
+      classes: [],
+      os: []
     )
 
     return (externalStruct, internalStruct)
@@ -79,6 +82,13 @@ private struct StructGeneratorResultCollector {
     return StructGeneratorResultCollector(
       externalStructs: externalStructs + [result.externalStruct],
       internalStructs: internalStructs + [result.internalStruct].compactMap { $0 }
+    )
+  }
+
+  var sorted: StructGeneratorResultCollector {
+    return StructGeneratorResultCollector(
+      externalStructs: externalStructs.sorted(by: { $0.type.name.description < $1.type.name.description }),
+      internalStructs: internalStructs.sorted(by: { $0.type.name.description < $1.type.name.description })
     )
   }
 }

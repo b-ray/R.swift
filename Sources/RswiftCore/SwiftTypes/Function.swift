@@ -20,6 +20,7 @@ struct Function: UsedTypesProvider, SwiftCodeConverible, ObjcCodeConvertible {
   let doesThrow: Bool
   let returnType: Type
   let body: String
+  let os: [String]
 
   var usedTypes: [UsedType] {
     return [
@@ -31,7 +32,7 @@ struct Function: UsedTypesProvider, SwiftCodeConverible, ObjcCodeConvertible {
   }
 
   var swiftCode: String {
-    let commentsString = comments.map { "/// \($0)\n" }.joined(separator: "")
+    let commentsString = comments.map { $0.isEmpty ? "///\n" : "/// \($0)\n" }.joined(separator: "")
     let availablesString = availables.map { "@available(\($0))\n" }.joined(separator: "")
     let accessModifierString = accessModifier.swiftCode
     let staticString = isStatic ? "static " : ""
@@ -41,7 +42,7 @@ struct Function: UsedTypesProvider, SwiftCodeConverible, ObjcCodeConvertible {
     let returnString = Type._Void == returnType ? "" : " -> \(returnType)"
     let bodyString = body.indent(with: "  ")
 
-    return "\(commentsString)\(availablesString)\(accessModifierString)\(staticString)func \(name)\(genericsString)(\(parameterString))\(throwString)\(returnString) {\n\(bodyString)\n}"
+    return OSPrinter(code: "\(commentsString)\(availablesString)\(accessModifierString)\(staticString)func \(name)\(genericsString)(\(parameterString))\(throwString)\(returnString) {\n\(bodyString)\n}", supportedOS: os).swiftCode
   }
     
   func objcCode(prefix: String) -> String {

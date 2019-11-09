@@ -44,6 +44,10 @@ struct SegueStructGenerator: ExternalOnlyStructGenerator {
             return nil
           }
 
+          guard !segue.identifier.isEmpty else {
+            return nil
+          }
+
           return SegueWithInfo(segue: segue, sourceType: viewController.type, destinationType: destinationType)
         }
       }
@@ -80,7 +84,8 @@ struct SegueStructGenerator: ExternalOnlyStructGenerator {
       properties: [],
       functions: [],
       structs: structs,
-      classes: []
+      classes: [],
+      os: ["iOS", "tvOS"]
     )
   }
 
@@ -148,7 +153,8 @@ struct SegueStructGenerator: ExternalOnlyStructGenerator {
         returnType: Type.TypedStoryboardSegueInfo
           .asOptional()
           .withGenericArgs([segueWithInfo.segue.type, segueWithInfo.sourceType, segueWithInfo.destinationType]),
-        body: "return Rswift.TypedStoryboardSegueInfo(segueIdentifier: R.segue.\(SwiftIdentifier(name: sourceType.description)).\(SwiftIdentifier(name: segueWithInfo.segue.identifier)), segue: segue)"
+        body: "return Rswift.TypedStoryboardSegueInfo(segueIdentifier: R.segue.\(SwiftIdentifier(name: sourceType.description)).\(SwiftIdentifier(name: segueWithInfo.segue.identifier)), segue: segue)",
+        os: ["iOS", "tvOS"]
       )
     }
 
@@ -164,7 +170,8 @@ struct SegueStructGenerator: ExternalOnlyStructGenerator {
       properties: properties,
       functions: functions,
       structs: [],
-      classes: []
+      classes: [],
+      os: []
     )
   }
 }

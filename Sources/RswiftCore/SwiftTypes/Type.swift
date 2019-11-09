@@ -9,7 +9,7 @@
 
 import Foundation
 
-struct UsedType {
+struct UsedType: Hashable {
   let type: Type
 
   fileprivate init(type: Type) {
@@ -22,6 +22,9 @@ struct Type: UsedTypesProvider, CustomStringConvertible, Hashable {
   static let _Any = Type(module: .stdLib, name: "Any")
   static let _AnyObject = Type(module: .stdLib, name: "AnyObject")
   static let _String = Type(module: .stdLib, name: "String")
+  static let _Bool = Type(module: .stdLib, name: "Bool")
+  static let _Array = Type(module: .stdLib, name: "Array")
+  static let _Tuple = Type(module: .stdLib, name: "_TUPLE_")
   static let _Int = Type(module: .stdLib, name: "Int")
   static let _UInt = Type(module: .stdLib, name: "UInt")
   static let _Double = Type(module: .stdLib, name: "Double")
@@ -74,10 +77,6 @@ struct Type: UsedTypesProvider, CustomStringConvertible, Hashable {
     return TypePrinter(type: self).swiftCode
   }
 
-  var hashValue: Int {
-    return description.hashValue
-  }
-
   init(module: Module, name: SwiftIdentifier, genericArgs: [TypeVar] = [], optional: Bool = false) {
     self.module = module
     self.name = name
@@ -107,8 +106,4 @@ struct Type: UsedTypesProvider, CustomStringConvertible, Hashable {
   func withGenericArgs(_ genericArgs: [Type]) -> Type {
     return Type(module: module, name: name, genericArgs: genericArgs, optional: optional)
   }
-}
-
-func ==(lhs: Type, rhs: Type) -> Bool {
-  return (lhs.hashValue == rhs.hashValue)
 }
